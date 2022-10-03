@@ -1,4 +1,4 @@
-import { Json } from 'sequelize/types/utils';
+import { Op } from 'sequelize';
 import Event from './entities/event.entity';
 import Workshop from './entities/workshop.entity';
 
@@ -163,6 +163,18 @@ export class EventsService {
     ```
      */
   async getFutureEventWithWorkshops() {
-    throw new Error('TODO task 2');
+    Event.hasMany(Workshop, {foreignKey: "eventId"});
+    Workshop.belongsTo(Event, {foreignKey: "eventId"});
+
+    return await Event.findAll({
+      include: [
+        {
+          model: Workshop,
+          where: {
+            start: {
+              [Op.gt]: new Date(),
+          }
+        }}]
+    });
   }
 }
